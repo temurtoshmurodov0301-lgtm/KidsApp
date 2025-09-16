@@ -1,0 +1,109 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom, #ffecd2, #fcb69f);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  width: 360px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+header .logo {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+header h1 {
+  font-size: 28px;
+  color: #ff6f61;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+}
+
+input {
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border 0.2s;
+}
+
+input:focus {
+  border-color: #ff6f61;
+  outline: none;
+}
+
+button {
+  margin-top: 10px;
+  padding: 12px;
+  background: #ff6f61;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+footer {
+  margin-top: 15px;
+  font-size: 12px;
+}
+
+footer a {
+  color: #ff6f61;
+  text-decoration: none;
+}
+
+
+.sprite {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  background-image: url("sparrow-sprite.png");
+  background-size: cover;
+  animation: fly 2s infinite;
+}
+
+@keyframes fly {
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(-5deg); }
+  50% { transform: translateY(0px) rotate(0deg); }
+  75% { transform: translateY(-10px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
