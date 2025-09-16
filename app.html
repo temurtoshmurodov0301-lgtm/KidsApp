@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sparrow Kids — App</title>
+  <!-- reuse your existing style.css so design stays consistent -->
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* small app-specific styles that won't affect signup layout */
+    /* placed here so we don't change your global style.css */
+    .app-shell{ max-width:760px; margin:28px auto; font-family: "Comic Sans MS", cursive, sans-serif; }
+    .topbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+    .card.app-card{ padding:18px; border-radius:16px; }
+    .balance{ font-weight:800; font-size:18px; background:#FFF6F4; padding:8px 10px; border-radius:12px; display:inline-block; }
+    .flex-row{ display:flex; gap:12px; align-items:center; }
+    .small-btn{ padding:8px 10px; border-radius:10px; cursor:pointer; border:none; background:linear-gradient(90deg,#f505e9,#1825e0); }
+    .muted{ color:#666; font-size:13px; }
+    .panel-grid{ display:grid; grid-template-columns: 1fr 320px; gap:14px; margin-top:12px; }
+    .note-card{ background:linear-gradient(180deg,#FFF8F0,#FFF0E6); padding:12px; border-radius:10px; }
+    .transactions-list, .messages-list{ list-style:none; padding:0; margin:0; max-height:200px; overflow:auto; }
+    .transactions-list li, .messages-list li{ padding:8px; border-radius:8px; margin-bottom:8px; background:#fff; border:1px solid rgba(0,0,0,0.04); display:flex; justify-content:space-between; align-items:center; }
+    .parent-panel{ position:fixed; right:18px; top:18px; width:260px; padding:12px; border-radius:12px; background:#fff; box-shadow:0 12px 30px rgba(0,0,0,0.12); display:none; z-index:1000;}
+    .parent-panel.visible{ display:block; }
+    .ghost{ background:transparent; border:1px solid black; padding:8px 10px; border-radius:10px; cursor:pointer; }
+    @media (max-width:900px){ .panel-grid{ grid-template-columns:1fr } .topbar{ flex-direction:column; align-items:flex-start } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+
+    <div class="topbar">
+      <div class="brand">
+        <img src="./sparrow.jpg" alt="Sparrow" style="width:72px;border-radius:12px;margin-right:10px;vertical-align:middle;">
+        <span style="vertical-align:middle">
+          <div style="font-weight:800;font-size:18px">Sparrow Kids</div>
+          <div class="muted">Safe card & fun savings</div>
+        </span>
+      </div>
+
+      <div class="flex-row">
+        <div class="balance">Balance: sum <span id="balanceValue">0.00</span></div>
+        <button id="openParent" class="ghost">Parent</button>
+        <button id="logout" class="small-btn">Log out</button>
+      </div>
+    </div>
+
+    <div class="card app-card">
+      <div style="display:flex;gap:14px;align-items:center;">
+        <div style="width:140px; text-align:center;">
+          <div class="sprite" id="appSprite" style="width:120px;height:120px;background-image:url('sparrow-sprite.png');background-size:cover;margin:0 auto;"></div>
+        </div>
+
+        <div style="flex:1">
+          <h2 id="welcome">Welcome, Kiddo!</h2>
+          <p class="muted" id="tagline">Read your parent's note and manage your Sparrow card.</p>
+          <div style="margin-top:8px;">
+            <strong>Card:</strong> <span id="cardMasked">**** **** **** 1234</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+
+        <!-- left column -->
+        <div>
+          <div class="note-card" style="margin-top:12px;">
+            <h3 style="margin:0 0 8px 0">Parent Note</h3>
+            <div id="parentNoteText" class="muted">No notes yet. Ask your parent to send one.</div>
+            <div style="margin-top:10px; display:flex; gap:8px;">
+              <input id="replyInput" placeholder="Reply to parent..." style="flex:1;padding:8px;border-radius:10px;border:1px solid #ddd">
+              <button id="replyBtn" class="small-btn">Send</button>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px;">
+            <h4 style="margin:0 0 8px 0">Transactions</h4>
+            <ul id="transactionsList" class="transactions-list"></ul>
+          </div>
+        </div>
+
+        <!-- right column -->
+        <div>
+          <div class="card" style="padding:12px;">
+            <h4 style="margin:0 0 8px 0">Pay / Transfer</h4>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <input id="payAmount" type="number" placeholder="Amount sum" style="flex:1;padding:8px;border-radius:10px;border:1px solid #ddd">
+              <select id="payMethod" style="padding:8px;border-radius:10px;border:1px solid #ddd">
+                <option value="card">Card / Terminal</option>
+                <option value="transfer">Transfer</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button id="payBtn" class="small-btn">Pay</button>
+              <button id="termToggle" class="ghost">Simulate Terminal</button>
+            </div>
+            <div class="muted" id="payStatus" style="margin-top:8px">Demo-only transactions are stored locally.</div>
+          </div>
+
+          <div class="card" style="padding:12px;margin-top:12px;">
+            <h4 style="margin:0 0 8px 0">PinkyPig (Locked Savings)</h4>
+            <div class="muted" style="margin-bottom:8px">Lock savings — parent must approve to unlock.</div>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <input id="pinkyAmount" type="number" placeholder="Amount sum" style="flex:1;padding:8px;border-radius:10px;border:1px solid #ddd">
+              <button id="pinkyBtn" class="small-btn">Lock</button>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px">
+              <div class="muted">Available: sum <span id="availVal">0.00</span></div>
+              <div class="muted">Locked: sum <span id="lockedVal">0.00</span></div>
+            </div>
+            <div style="margin-top:8px; display:flex;gap:8px;">
+              <button id="requestUnlock" class="ghost">Request Unlock</button>
+              <div id="unlockStatus" class="muted">—</div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:12px;margin-top:12px;">
+            <h4 style="margin:0 0 8px 0">Messages</h4>
+            <ul id="messagesList" class="messages-list"></ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- parent panel (demo) -->
+    <div id="parentPanel" class="parent-panel" role="dialog" aria-hidden="true">
+      <h4>Parent Panel (demo)</h4>
+      <label style="font-size:13px">Note
+        <input id="noteInput" style="width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #ddd">
+      </label>
+      <div style="margin-top:8px;display:flex;gap:8px;">
+        <button id="sendNote" class="small-btn">Send Note</button>
+        <button id="topUp" class="ghost">Top Up sum100</button>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;">
+        <button id="approveUnlock" class="small-btn">Approve Unlock</button>
+        <button id="rejectUnlock" class="ghost">Reject</button>
+      </div>
+      <div style="margin-top:8px" class="muted">Enter parent code when opening panel: <strong>PARENT123</strong></div>
+      <div style="margin-top:8px"><button id="closeParentPanel" class="ghost">Close</button></div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
